@@ -104,7 +104,7 @@ Make sure the variables are in the right format.
 
 Describe the characteristics of the two groups of participants and whether the two 
 
-```{r descriptive stats}
+```{r descriptive stats, include=FALSE}
 summary(data)
 
 # ASD: 166, TD: 186, F: 295, M: 57, age mean 36.52 mdr
@@ -116,7 +116,7 @@ barchartGender
 barchartEthnic <- ggplot(data, aes(Diagnosis, Ethnicity, fill = Ethnicity)) + geom_bar(stat = "identity") + guides(fill = guide_legend(reverse = TRUE)) + labs(fill = "Ethnicity") + ggtitle("Ethnic Distribution")
 barchartEthnic
 
-boxplot_ADOS <- ggplot(data, aes(Diagnosis,ADOS,fill=Diagnosis))+geom_boxplot()+labs(x = "Diagnosis", y = "ADOS score")
+boxplot_ADOS <- ggplot(data, aes(Diagnosis,ADOS,fill=Diagnosis))+geom_boxplot()+labs(title = "ADOS",x = "Diagnosis", y = "ADOS score")
 boxplot_ADOS
 
 
@@ -135,7 +135,7 @@ boxplotNonVerbal_IQ
 boxplotWordTypes<- ggplot(data, aes(x=Diagnosis, y=types_CHI, fill = Diagnosis))+geom_boxplot()+labs(title = "Number of unique words used by child", x = "Diagnosis", y = "Number of unique words used by child")+scale_fill_manual(values = wes_palette("GrandBudapest2"))
 boxplotWordTypes
 
-boxplotWordNumber <- ggplot(data, aes(Diagnosis, tokens_CHI, fill = Diagnosis)) + geom_boxplot() + labs(x = "Diagnosis", y = "Number of words used by child")+scale_fill_manual(values = wes_palette("GrandBudapest1"))
+boxplotWordNumber <- ggplot(data, aes(Diagnosis, tokens_CHI, fill = Diagnosis)) + geom_boxplot() + labs(title = "Number of words used by child",x = "Diagnosis", y = "Number of words used by child")+scale_fill_manual(values = wes_palette("GrandBudapest1"))
 boxplotWordNumber
 
 
@@ -163,24 +163,27 @@ Remember to plot the data first and then to run a statistical test.
 - Which variable(s) should be included as fixed factors?
 - Which variable(s) should be included as random factors?
 
-```{r ex2}
-barchart1 <- ggplot(data, aes(Diagnosis, CHI_MLU, fill = Diagnosis)) + stat_summary(fun.y = mean, geom = "bar") + geom_errorbar(stat = "summary", fun.data = mean_se, width = 0.25) + theme(legend.position='none') + labs(title = "Child MLU", x = "Diagnosis", y = "Child MLU")
-barchart1
+```{r ex2, include=FALSE}
+boxplotChild_MLU <- ggplot(data, aes(Diagnosis, CHI_MLU, fill = Diagnosis)) + geom_boxplot() + labs(x = "Diagnosis", y = "Child mean length of utterance ")+scale_fill_manual(values = wes_palette("GrandBudapest1"))
+boxplotChild_MLU
+
 
 data <- data %>% mutate( ID = factor(ID))
-boxplot_MLU<- ggplot(data, aes(x=ID, y=types_CHI, fill = Diagnosis))+geom_boxplot()+labs(title = "Child MLU", x = "Diagnosis", y = "Child MLU")+scale_fill_manual(values = wes_palette("GrandBudapest2"))
+boxplot_MLU<- ggplot(data, aes(x=ID, y=types_CHI, fill = Diagnosis))+geom_boxplot()+labs(title = "Child mean length of utterance", x = "Diagnosis", y = "Child MLU")+scale_fill_manual(values = wes_palette("GrandBudapest2"))
 boxplot_MLU
 
-graph1 <- ggplot(data, aes(VISIT, CHI_MLU, color = Diagnosis)) + geom_point() + geom_smooth(method = "lm", se = F) + labs(title = "Child MLU by diagnosis without random intercept", x = "Visit number", y = "Child MLU")
+graph1 <- ggplot(data, aes(VISIT, CHI_MLU, color = Diagnosis)) + geom_point() + geom_smooth(method = "lm", se = F) + labs(title = "Child MLU by diagnosis without random intercept", x = "Visit number", y = "Child MLU")+scale_color_manual(values = wes_palette("GrandBudapest1"))
 graph1
 
-data$ID <- as.factor(data$ID) 
+
 graph2 <- ggplot(filter(data, Diagnosis == "ASD"), aes(VISIT, CHI_MLU, group = ID, color = ID)) +geom_point()+ geom_smooth(method = "lm", se = F) + labs(title = "ASD Child MLU", x = "Visit number", y = "Child MLU")
 graph2
 
-graph3 <- ggplot(data, aes(VISIT, CHI_MLU, group = ID, color = Diagnosis)) + geom_smooth(method = "lm", se = F) + labs(title = "Child MLU", x = "Visit number", y = "Child MLU")
+graph3 <- ggplot(data, aes(VISIT, CHI_MLU, group = ID, color = Diagnosis)) + geom_smooth(method = "lm", se = F) + labs(title = "Child MLU", x = "Visit number", y = "Child MLU")+scale_color_manual(values = wes_palette("BottleRocket2"))
 graph3
+```
 
+```{r, include=FALSE}
 
 # graph  with intercept and slope
 #graph4 <- ggplot(data, aes(VISIT, CHI_MLU, group = ID, color = Diagnosis)) + geom_point() + geom_smooth(method = "lm", se = F) + labs(title = "Child MLU", x = "Visit number", y = "Child MLU") + geom_abline(intercept = 1.30680, slope = slope, color = slope)
@@ -272,7 +275,7 @@ Parent MLU is affected by ... but probably not ...
 Your task now is to figure out how to best describe the children linguistic trajectory. The dataset contains a bunch of additional demographic, cognitive and clinical variables (e.g.verbal and non-verbal IQ). Try them out and identify the statistical models that best describes your data (that is, the children's MLU). Describe how you selected the best model and send the code to run the model to Riccardo and Kenneth
 
 
-```{r ex4}
+```{r ex4, include=FALSE}
 
 goodModelExpress = lmer(CHI_MLU ~ Diagnosis * VISIT + ExpressiveLangRaw1+ (1|ID)+(0+VISIT|ID), data, REML = F)
 goodModel = lmer(CHI_MLU ~ VISIT*Diagnosis +(1|ID) + (0+VISIT|ID), data, REML=FALSE)
